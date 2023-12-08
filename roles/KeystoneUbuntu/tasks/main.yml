@@ -1,0 +1,61 @@
+  - name: install keystone (Ubuntu)
+    apt:
+      name: keystone
+      state: present
+
+  - name: remove other connection in database
+    lineinfile:
+      path: /etc/keystone/keystone.conf
+      regexp: '^connection = '
+      state: absent
+      insertafter: '^\[database\]'
+
+  - name: add connection in database
+    lineinfile:
+      path: /etc/keystone/keystone.conf
+      line: 'connection = mysql+pymysql://keystone:jenmar0112@clone1/keystone'
+      state: present
+      insertafter: '^\[database\]'
+
+  - name: add provider in token
+    lineinfile:
+      path: /etc/keystone/keystone.conf
+      line: 'provider = fernet'
+      state: present
+      insertafter: '^\[token\]'
+
+#  - name: Populate the Identity service
+#    shell:
+#      su -s /bin/sh -c "keystone-manage db_sync" keystone
+
+#  - name: Initialize Fernet key repositories 1
+#    shell:
+#      sudo keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+
+#  - name: Initialize Fernet key repositories 2
+#    shell:
+#      sudo keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+
+#  - name: Bootstrap the Identity service
+#    shell:
+#      keystone-manage bootstrap --bootstrap-password jenmar0112   --bootstrap-admin-url http://controller:5000/v3/   --bootstrap-internal-url http://controller:5000/v3/   --bootstrap-public-url http://controller:5000/v3/   --bootstrap-region-id RegionOne
+
+  - name: add server name in apache2
+    lineinfile:
+      path: /etc/apache2/apache2.conf
+      line: 'ServerName controller'
+      state: present
+
+  - name: restart apache2
+    service:
+      name: apache2
+      state: restarted
+
+#  - name: create admin-openrc file
+#    template:
+#      src: admin-openrc.j2
+#      dest: /home/sher/admin-openrc
+
+#  - name:  populate environment variables
+#    shell:
+#      sudo . admin-openrc

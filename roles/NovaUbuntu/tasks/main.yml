@@ -1,0 +1,391 @@
+  - name: install nova (Ubuntu)
+    apt:
+      name:
+        - nova-api
+        - nova-conductor
+        - nova-novncproxy
+        - nova-scheduler
+      state: present
+
+  - name: remove other connection in api_database
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: '^connection = '
+      state: absent
+      insertafter: '^\[api_database\]'
+
+  - name: add connection in api_database
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'connection = mysql+pymysql://nova:jenmar0112@clone1/nova_api'
+      state: present
+      insertafter: '^\[api_database\]'
+
+  - name: remove other connection in database
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: '^connection = '
+      state: absent
+      insertafter: '^\[database\]'
+
+  - name: add connection in database
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'connection = mysql+pymysql://nova:jenmar0112@clone1/nova'
+      state: present
+      insertafter: '^\[database\]'
+
+  - name: add transport_url in DEFAULT
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'transport_url = rabbit://openstack:jenmar0112@clone1:5672/'
+      state: present
+      insertafter: '^\[DEFAULT\]'
+
+  - name: add auth_strategy in api
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_strategy = keystone'
+      state: present
+      insertafter: '^\[api\]'
+
+  - name: add authenticate in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'www_authenticate_uri = http://controller:5000'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add auth_url in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_url = http://controller:5000'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add memcached_servers in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'memcached_servers = controller:11211'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add auth_type in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_type = password'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add project_domain_name in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_domain_name = Default'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add user_domain_name in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'user_domain_name = Default'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add project_name in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_name = service'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add username in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'username = nova'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add password in keystone_authtoken
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'password = jenmar0112'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add send_service_user_token in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'send_service_user_token = true'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add auth_url in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'https://controller/identity'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add auth_strategy in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_strategy = keystone'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add auth_type in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_type = password'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add project_domain_name in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_domain_name = Default'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add user_domain_name in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'user_domain_name = Default'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add project_name in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_name = service'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add username in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'username = nova'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add password in service_user
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'password = jenmar0112'
+      state: present
+      insertafter: '^\[service_user\]'
+
+  - name: add my_ip in DEFAULT
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'my_ip = 192.168.56.109'
+      state: present
+      insertafter: '^\[DEFAULT\]'
+
+  - name: add auth_url in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_type = password'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add auth_type in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_url = http://controller:5000'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add project_domain_name in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_domain_name = default'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add user_domain_name in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'user_domain_name = default'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add region_name in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'region_name = RegionOne'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add project_name in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_name = service'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add username in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'username = neutron'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add password in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'password = jenmar0112'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add service_metadata_proxy in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'service_metadata_proxy = true'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add metadata_proxy_shared_secret in neutron
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'metadata_proxy_shared_secret = METADATA_SECRET'
+      state: present
+      insertafter: '^\[neutron\]'
+
+  - name: add enabled in vnc
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'enabled = true'
+      state: present
+      insertafter: '^\[vnc\]'
+
+  - name: add server_listen in vnc
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'server_listen = $my_ip'
+      state: present
+      insertafter: '^\[vnc\]'
+
+  - name: add server_proxyclient_address in vnc
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'server_proxyclient_address = $my_ip'
+      state: present
+      insertafter: '^\[vnc\]'
+
+  - name: add api_servers in glance
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'api_servers = http://controller:9292'
+      state: present
+      insertafter: '^\[glance\]'
+
+  - name: add lock_path in oslo_concurrency
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'lock_path = /var/lib/nova/tmp'
+      state: present
+      insertafter: '^\[oslo_concurrency\]'
+
+  - name: remove log_dir in DEFAULT
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: '^log_dir = '
+      state: absent
+      insertafter: '^\[DEFAULT\]'
+
+  - name: add region_name in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'region_name = RegionOne'
+      state: present
+      insertafter: '^\[placement\]'
+
+  - name: add project_domain_name in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_domain_name = Default'
+      state: present
+      insertafter: '^\[placement\]'
+
+  - name: add project_name in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'project_name = service'
+      state: present
+      insertafter: '^\[placement\]'
+
+  - name: add auth_type in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_type = password'
+      state: present
+      insertafter: '^\[placement\]'
+
+  - name: add user_domain_name in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'user_domain_name = Default'
+      state: present
+      insertafter: '^\[placement\]'
+
+  - name: add auth_url in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'auth_url = http://controller:5000/v3'
+      state: present
+      insertafter: '^\[placement\]'
+
+  - name: add username in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'username = placement'
+      state: present
+      insertafter: '^\[placement\]'
+
+  - name: add password in placement
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: 'password = jenmar0112'
+      state: present
+      insertafter: '^\[placement\]'
+
+#  - name: Populate the nova-api
+#    shell:
+#      su -s /bin/sh -c "nova-manage api_db sync" nova
+
+#  - name: Register the cell0
+#    shell:
+#      su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+
+#  - name: Create the cell1
+#    shell:
+#      su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
+
+#  - name: Populate the nova
+#    shell:
+#      su -s /bin/sh -c "nova-manage db sync" nova
+
+#  - name: Verify nova cell0 and cell1
+#    shell:
+#      su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
+
+  - name: restart nova-api service
+    service:
+      name: nova-api
+      state: restarted
+
+  - name: restart nova-scheduler service
+    service:
+      name: nova-scheduler
+      state: restarted
+
+  - name: restart nova-conductor service
+    service:
+      name: nova-conductor
+      state: restarted
+
+  - name: restart nova-novncproxy service
+    service:
+      name: nova-novncproxy
+      state: restarted

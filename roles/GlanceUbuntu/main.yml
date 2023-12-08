@@ -1,0 +1,178 @@
+  - name: install glance (Ubuntu)
+    apt:
+      name: glance
+      state: present
+
+  - name: remove other connection in database
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      regexp: '^connection = '
+      state: absent
+      insertafter: '^\[database\]'
+
+  - name: add connection in database
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'connection = mysql+pymysql://glance:jenmar0112@clone1/glance'
+      state: present
+      insertafter: '^\[database\]'
+
+  - name: add authenticate in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'www_authenticate_uri = http://controller:5000'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add auth_url in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'auth_url = http://controller:5000'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add memcached_servers in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'memcached_servers = controller:11211'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add auth_type in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'auth_type = password'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add project_domain_name in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'project_domain_name = Default'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add user_domain_name in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'user_domain_name = Default'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add project_name in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'project_name = service'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add username in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'username = glance'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add password in keystone_authtoken
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'password = jenmar0112'
+      state: present
+      insertafter: '^\[keystone_authtoken\]'
+
+  - name: add flavor in paste_deploy
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'flavor = keystone'
+      state: present
+      insertafter: '^\[paste_deploy\]'
+
+  - name: add stores in glance_store
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'stores = file,http'
+      state: present
+      insertafter: '^\[glance_store\]'
+
+  - name: add default_store in glance_store
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'default_store = file'
+      state: present
+      insertafter: '^\[glance_store\]'
+
+  - name: add filesystem_store_datadir in glance_store
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'filesystem_store_datadir = /var/lib/glance/images/'
+      state: present
+      insertafter: '^\[glance_store\]'
+
+  - name: add auth_url in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'auth_url = http://controller:5000'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+  - name: add auth_type in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'auth_type = password'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+  - name: add user_domain_id in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'user_domain_id = default'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+  - name: add username in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'username = MY_SERVICE'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+  - name: add system_scope in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'system_scope = all'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+  - name: add password in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'password = MY_PASSWORD'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+  - name: add endpoint_id in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'endpoint_id = ENDPOINT_ID'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+  - name: add region_name in oslo_limit
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      line: 'region_name = RegionOne'
+      state: present
+      insertafter: '^\[oslo_limit\]'
+
+#  - name: MY_SERVICE access to system-scope resources
+#    shell:
+#      openstack role add --user MY_SERVICE --user-domain Default --system all reader
+
+#  - name: Populate the Image service
+#    shell:
+#      su -s /bin/sh -c "glance-manage db_sync" glance
+
+  - name: restart glance
+    service:
+      name: glance-api
+      state: restarted
